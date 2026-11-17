@@ -58,9 +58,10 @@ Type `quit` (or press Ctrl+C) to exit. The hand opens before the program closes.
 
 ## Free tier notes
 
-- The default model is `gemini-flash-latest`, which always points at Google's current Flash model.
-  To see what your key can use, run `python LLMControl/llm_hand.py --list-models`, then pick one
-  with `--model <name>` (a "flash-lite" model usually has the highest free limits).
+- The default model is `gemini-3.5-flash-lite`: it works on the free tier and handles hand
+  commands well. To see what your key can use, run `python LLMControl/llm_hand.py --list-models`,
+  then pick one with `--model <name>`, e.g. `--model gemini-3.8-flash` (smarter, but often
+  busy with "high demand" errors on the free tier).
 - The free tier has per-minute and per-day request limits, and Google changes them often. One
   command uses about 2-3 requests. If you hit the limit you'll see a "free-tier limit reached"
   message: wait a minute, or until the next day.

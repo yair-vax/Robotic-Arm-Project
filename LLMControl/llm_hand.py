@@ -16,9 +16,9 @@ from google.genai import errors, types
 
 from hand import FINGERS, GESTURES, Hand, MAX_SPEED, SERIAL_PORT
 
-# "gemini-flash-latest" always points at Google's current Flash model.
+# Flash-lite: works on the free tier, fast, and good enough for picking hand moves.
 # Run with --list-models to see others, then pass --model <name>.
-DEFAULT_MODEL = "gemini-flash-latest"
+DEFAULT_MODEL = "gemini-3.5-flash-lite"
 MAX_TOOL_ROUNDS = 25      # safety cap on tool rounds per message
 MAX_WAIT_SECONDS = 5.0
 
@@ -194,11 +194,13 @@ def handle_message(client, model, chat, hand, user_text):
         elif exc.code in (400, 401, 403) and "key" in str(exc.message).lower():
             print("Error: API key missing or invalid. Set GEMINI_API_KEY (see README).")
         elif exc.code == 404:
-            print(f"Error: model '{model}' not found. Run with --list-models to see valid names.")
+            print(f"Error: model '{model}' can't be used: {exc.message}\n"
+                  "Run with --list-models to see other names, then use --model <name>.")
         else:
             print(f"API error {exc.code}: {exc.message}")
     except errors.APIError as exc:
-        print(f"Gemini server error {exc.code}: {exc.message} - try again in a moment.")
+        print(f"Gemini server error {exc.code}: {exc.message}\n"
+              f"Try again in a moment, or start with a different --model (default {DEFAULT_MODEL}).")
     except OSError:
         print("Error: could not reach the Gemini API - check your internet connection.")
 
