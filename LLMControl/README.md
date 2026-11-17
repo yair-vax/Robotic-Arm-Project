@@ -32,21 +32,63 @@ through `hand.py`, which clamps angles and speed, so the model can't push a serv
    (same values as `MiddlePos` in `PythonExample/AmazingHand_Demo.py`). Change `SERIAL_PORT` if
    your hand isn't on `COM3`.
 
-## Run
+## Quick start: exactly what to type
 
-Try it without the hand first. Servo commands are printed instead of sent:
-
-```
-python LLMControl/llm_hand.py --dry-run
-```
-
-With the hand connected:
+Open a terminal in VS Code (**Terminal > New Terminal**). It opens in the `AmazingHand-main`
+folder. If it doesn't, go there first:
 
 ```
-python LLMControl/llm_hand.py --port COM3
+cd C:\Users\yairv\Desktop\AmazingHand-main
 ```
 
-Type `quit` (or press Ctrl+C) to exit. The hand opens before the program closes.
+### Dry run (no hand connected)
+
+Nothing moves. Every servo command is printed on the screen instead.
+
+1. Start the program:
+   ```
+   python LLMControl/llm_hand.py --dry-run
+   ```
+2. Wait for `You:`, then type a request and press **Enter**:
+   ```
+   You: make a peace sign
+   ```
+3. Type more requests the same way. When you're done, type:
+   ```
+   You: quit
+   ```
+
+### Real hand (connected on COM3)
+
+1. Plug the hand's USB serial adapter into the PC and turn on the servos' power supply.
+2. Start the program:
+   ```
+   python LLMControl/llm_hand.py --port COM3
+   ```
+   If your hand is on a different port, use that instead (e.g. `--port COM5`). The port is
+   listed in **Device Manager > Ports (COM & LPT)**.
+3. Wait for `You:`, then type a request and press **Enter**:
+   ```
+   You: make a fist
+   ```
+4. When you're done, type `quit`. The hand opens before the program closes. Ctrl+C does the same.
+
+### Requests go at the `You:` prompt, not on the command line
+
+```
+python LLMControl/llm_hand.py --dry-run make a peace sign   <- wrong: the program rejects it
+python LLMControl/llm_hand.py --dry-run                     <- right: start it, then type at You:
+```
+
+### If something goes wrong
+
+| You see | What to do |
+|---|---|
+| `Python was not found` | Close VS Code completely and reopen it (Python was added to PATH after VS Code started). |
+| `no API key found` | Run `setx GEMINI_API_KEY "your-key-here"` once, then close and reopen VS Code. Use `setx`; PowerShell's `Set` doesn't work. |
+| `free-tier limit reached` | Wait a minute, or until tomorrow if the daily quota is used up. |
+| `server error 503 ... high demand` | Try again in a moment, or start with another model: `--model gemini-3.1-flash-lite` |
+| `model ... can't be used` | Run `python LLMControl/llm_hand.py --list-models` and pick a name with `--model <name>`. |
 
 ## Things to try
 
