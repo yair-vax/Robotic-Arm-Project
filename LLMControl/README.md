@@ -1,11 +1,11 @@
 # LLM Control: talk to the AmazingHand
 
-Type what you want the hand to do and Claude makes it happen:
+Type what you want the hand to do and Google Gemini makes it happen, using the free Gemini API tier:
 
 ```
 You: make a peace sign
   [hand] gesture: victory
-Claude: The hand is showing a peace sign.
+Gemini: The hand is showing a peace sign.
 
 You: count to three slowly
   [hand] set: index 0%, middle 100%, ring 100%, thumb 100% (speed 4)
@@ -13,9 +13,9 @@ You: count to three slowly
   ...
 ```
 
-Claude reads your message and calls tools that move the hand: named gestures (fist, point, OK,
+Gemini reads your message and calls functions that move the hand: named gestures (fist, point, OK,
 victory, ...) or custom finger poses (how much each finger bends and tilts). Every command goes
-through `hand.py`, which clamps angles and speed, so Claude can't push a servo past its limits.
+through `hand.py`, which clamps angles and speed, so the model can't push a servo past its limits.
 
 ## Setup
 
@@ -23,9 +23,10 @@ through `hand.py`, which clamps angles and speed, so Claude can't push a servo p
    ```
    pip install -r LLMControl/requirements.txt
    ```
-2. **API key.** Create one at https://console.anthropic.com, then set it once (open a new terminal afterwards):
+2. **Free API key.** Sign in at https://aistudio.google.com/apikey with a Google account and click
+   *Create API key*. No credit card is needed. Then set it once and open a new terminal afterwards:
    ```
-   setx ANTHROPIC_API_KEY "sk-ant-..."
+   setx GEMINI_API_KEY "your-key-here"
    ```
 3. **Calibration.** Put your servo middle positions in `MIDDLE_POS` at the top of `hand.py`
    (same values as `MiddlePos` in `PythonExample/AmazingHand_Demo.py`). Change `SERIAL_PORT` if
@@ -55,11 +56,18 @@ Type `quit` (or press Ctrl+C) to exit. The hand opens before the program closes.
 - `wave no with your finger, then relax`
 - `do that again but slower` (it remembers the conversation)
 
+## Free tier notes
+
+- The default model is `gemini-flash-latest`, which always points at Google's current Flash model.
+  To see what your key can use, run `python LLMControl/llm_hand.py --list-models`, then pick one
+  with `--model <name>` (a "flash-lite" model usually has the highest free limits).
+- The free tier has per-minute and per-day request limits, and Google changes them often. One
+  command uses about 2-3 requests. If you hit the limit you'll see a "free-tier limit reached"
+  message: wait a minute, or until the next day.
+- On the free tier, Google may use your prompts to improve its models. Don't type anything private.
+
 ## Notes
 
-- Model: `claude-opus-5-5` at low effort, for quick replies. Each message costs a fraction of a
-  cent. Change `MODEL` at the top of `llm_hand.py` to try another model.
-- If Claude declines a request, a server-side fallback retries it on another model automatically.
 - Settings for one right hand on servo IDs 1-8. For a left hand, the side-tilt gestures
   (`spread`, `clench`, `ok`, `victory`, `scissors`, `pinch`) would need the left-hand values from
   `AmazingHand_Demo.py`.
