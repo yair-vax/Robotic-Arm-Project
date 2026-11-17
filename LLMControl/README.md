@@ -8,14 +8,18 @@ You: make a peace sign
 Gemini: The hand is showing a peace sign.
 
 You: count to three slowly
-  [hand] set: index 0%, middle 100%, ring 100%, thumb 100% (speed 4)
+  [hand] set: index 100% open, middle 0% open, ring 0% open, thumb 0% open (speed 4)
   [hand] wait 1.0s
   ...
 ```
 
 Gemini reads your message and calls functions that move the hand: named gestures (fist, point, OK,
-victory, ...) or custom finger poses (how much each finger bends and tilts). Every command goes
-through `hand.py`, which clamps angles and speed, so the model can't push a servo past its limits.
+victory, ...) or custom finger poses (how open each finger is and how far it tilts). Every command
+goes through `hand.py`, which clamps angles and speed, so the model can't push a servo past its limits.
+
+**Finger opening, in percent:** 100% = fully open (straight), 0% = fully closed (curled into the
+palm), 50% = half closed. 100% uses the same servo angles as `OpenHand()` in the demo, and 0% the
+same as `CloseHand()`. Tilt (±30°) moves a finger sideways and is normally 0.
 
 ## Setup
 

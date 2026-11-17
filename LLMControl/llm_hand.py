@@ -26,7 +26,7 @@ SYSTEM_PROMPT = f"""You control a physical robot hand (the AmazingHand, a right 
 The person types what they want the hand to do; you make it happen with the tools.
 
 The hand has exactly 4 fingers: {", ".join(FINGERS)}. There is no pinky. Each finger has two motions:
-- bend_percent: 0 = straight/open, 100 = fully curled/closed.
+- open_percent: 100 = fully open/straight, 0 = fully closed/curled (50 = half closed).
 - tilt_degrees: -30 to 30, moves the finger sideways (spread or squeeze together). Use 0 normally.
 - speed: 1 (slow) to {MAX_SPEED} (fast).
 
@@ -67,16 +67,16 @@ TOOLS = [
                         "type": "object",
                         "properties": {
                             "finger": {"type": "string", "enum": FINGERS},
-                            "bend_percent": {
+                            "open_percent": {
                                 "type": "number",
-                                "description": "0 = open/straight, 100 = fully closed.",
+                                "description": "100 = fully open/straight, 0 = fully closed.",
                             },
                             "tilt_degrees": {
                                 "type": "number",
                                 "description": "Sideways tilt, -30 to 30. Usually 0.",
                             },
                         },
-                        "required": ["finger", "bend_percent", "tilt_degrees"],
+                        "required": ["finger", "open_percent", "tilt_degrees"],
                     },
                 },
                 "speed": {
@@ -119,9 +119,9 @@ def run_tool(hand, name, args):
         speed = max(1, min(int(args.get("speed", MAX_SPEED)), MAX_SPEED))
         parts = []
         for move in args["moves"]:
-            bend = max(0.0, min(float(move["bend_percent"]), 100.0))
-            hand.set_finger(move["finger"], bend, move.get("tilt_degrees", 0), speed)
-            parts.append(f"{move['finger']} {bend:.0f}%")
+            opened = max(0.0, min(float(move["open_percent"]), 100.0))
+            hand.set_finger(move["finger"], opened, move.get("tilt_degrees", 0), speed)
+            parts.append(f"{move['finger']} {opened:.0f}% open")
         print(f"  [hand] set: {', '.join(parts)} (speed {speed})")
         return "Moved: " + ", ".join(parts) + "."
 

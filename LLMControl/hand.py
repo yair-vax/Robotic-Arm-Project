@@ -34,8 +34,8 @@ CLOSE_SPEED = 3
 # Safety limits
 ANGLE_LIMIT = 90.0      # each servo stays within +/- this many degrees of its middle
 TILT_LIMIT = 30.0       # side-to-side tilt allowed through set_finger()
-FLEX_OPEN = -35.0       # flex angle at bend 0%   (matches OpenHand in the demo)
-FLEX_CLOSED = 90.0      # flex angle at bend 100% (matches CloseHand in the demo)
+FLEX_OPEN = -35.0       # flex angle at 100% open (matches OpenHand in the demo)
+FLEX_CLOSED = 90.0      # flex angle at 0% open   (matches CloseHand in the demo)
 
 
 def _clamp(value, low, high):
@@ -97,11 +97,11 @@ class Hand:
 
     # -- friendly control used by the LLM ------------------------------------
 
-    def set_finger(self, finger, bend_percent, tilt_degrees=0.0, speed=MAX_SPEED):
-        """Bend 0 = fully open, 100 = fully closed. Tilt +/-30 deg moves the finger sideways."""
-        bend = _clamp(float(bend_percent), 0.0, 100.0)
+    def set_finger(self, finger, open_percent, tilt_degrees=0.0, speed=MAX_SPEED):
+        """Open 100 = fully open, 0 = fully closed. Tilt +/-30 deg moves the finger sideways."""
+        opened = _clamp(float(open_percent), 0.0, 100.0)
         tilt = _clamp(float(tilt_degrees), -TILT_LIMIT, TILT_LIMIT)
-        flex = FLEX_OPEN + (FLEX_CLOSED - FLEX_OPEN) * bend / 100.0
+        flex = FLEX_CLOSED + (FLEX_OPEN - FLEX_CLOSED) * opened / 100.0
         # The two servos turn opposite ways to bend, the same way to tilt.
         self.move_finger(finger, flex + tilt, -flex + tilt, speed)
 
